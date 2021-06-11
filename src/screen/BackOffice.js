@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { View, StyleSheet, Text } from 'react-native'
+import React from 'react'
+import { View, StyleSheet, FlatList, Text, SafeAreaView } from 'react-native'
+import Announces from './../component/Announces'
 
 const BackOffice = (props) => {
-    const {
-        email
-    } = props
+
+    const qsd = ({item}) =>(
+        <Text>{item.nom}</Text>
+    )
+
     return (
-        <Text>bonjour {email} !</Text>
+        <FlatList
+            data={props.announces}
+            renderItem={qsd}
+            keyExtractor={item => item.id}
+        />
     )
 }
 

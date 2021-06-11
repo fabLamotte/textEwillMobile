@@ -6,10 +6,11 @@ const Connexion = (props) => {
     const {
         email,
         password,
-        setConnected,
         setEmail,
         setPassword,
-        setAnnounces
+        setAnnounces,
+        navigation,
+        setIsSignedIn
     } = props
 
     // Initialisation des principales variables
@@ -17,11 +18,6 @@ const Connexion = (props) => {
     const [errorPassword, setErrorPassword] = useState('')
     const [passDiscover, setPassDiscover] = useState(true)
     const [errorForm, setErrorForm] = useState('')
-
-    // Fonction changement de l'etat de connexion du user
-    const ChangeConnected = () => {
-        setConnected(true)
-    }
 
     // Gestion des icones
     const loginIcon = (Platform.OS === 'ios') ? "person-outline" : "person-sharp"
@@ -49,15 +45,15 @@ const Connexion = (props) => {
 
     // Fonction submit
     const testValidate = async () => {
-        let email1 = "antoine@ewill.fr"
-        let password1 = "antoine"
+        let qsd = 'antoine@ewill.fr'
+        let aze = "antoine"
 
         // Envoi des données dans l'api
         const token = await fetch("https://walter.dev.ewill.fr/api/login_check", {
             method: 'POST',
             body: JSON.stringify({
-                username: email1,
-                password: password1
+                username: qsd,
+                password: aze
             })
         })
             .then(function (response) {
@@ -70,20 +66,24 @@ const Connexion = (props) => {
                     return result.token
                 }
             });
-
-        const data = await fetch("https://walter.dev.ewill.fr/api/annonces/", {
-                method: 'GET',
-                headers: new Headers({
-                    'Authorization': `Bearer ${token}`,
-                }),
-            })
-            .then(function (response) {
-                return response.json()
-            })
-            .then(function (result) {
-                console.log(result)
-            });
-    }
+        
+        if(token){
+            const data = await fetch("https://walter.dev.ewill.fr/api/annonces/", {
+                    method: 'GET',
+                    headers: new Headers({
+                        'Authorization': `Bearer ${token}`,
+                    }),
+                })
+                .then(function (response) {
+                    return response.json()
+                })
+                .then(function (result) {
+                    setAnnounces(result)
+                    setIsSignedIn(true)
+                    navigation.navigate('BackOffice')
+                });
+            }
+        }
 
     return (
         <View style={styles.container}>
@@ -111,6 +111,7 @@ const Connexion = (props) => {
                                     onChangeText={setEmail}
                                     onBlur={verifyEmail}
                                     value={email}
+                                    defaultValue="antoine@ewill.fr"
                                 />
                             </View>
                         </View>
@@ -127,6 +128,7 @@ const Connexion = (props) => {
                                     value={password}
                                     onBlur={verifyPassword}
                                     secureTextEntry={passDiscover}
+                                    defaultValue="antoine"
                                 />
                                 <Icon name={passEyedIcon} style={styles.iconPassEyed} onPress={() => SwitchEye()} />
                             </View>
@@ -136,7 +138,7 @@ const Connexion = (props) => {
                         {/* Boutton disabled si les deux champs ne sont pas remplis */}
                         <View style={styles.submitZone}>
                             <TouchableOpacity style={styles.submitButton} onPress={() => testValidate()}
-                                disabled={(!password && !email) ? true : false} >
+                                 >
                                 <Text style={styles.submitText}>Se connecter</Text>
                             </TouchableOpacity>
                         </View>
@@ -184,6 +186,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         padding: 30,
         borderRadius: 50,
+        marginHorizontal:20,
+        marginTop:20,
         width: '90%'
     },
     connexionTitle: {
