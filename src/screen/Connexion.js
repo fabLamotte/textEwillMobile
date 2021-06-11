@@ -10,80 +10,83 @@ const Connexion = (props) => {
         setPassword,
         setAnnounces,
         navigation,
-        setIsSignedIn
+        setIsSignedIn,
+        setToken
     } = props
 
     // Initialisation des principales variables
-    const [errorEmail, setErrorEmail] = useState('')
-    const [errorPassword, setErrorPassword] = useState('')
-    const [passDiscover, setPassDiscover] = useState(true)
-    const [errorForm, setErrorForm] = useState('')
+        const [errorEmail, setErrorEmail] = useState('')
+        const [errorPassword, setErrorPassword] = useState('')
+        const [passDiscover, setPassDiscover] = useState(true)
+        const [errorForm, setErrorForm] = useState('')
 
     // Gestion des icones
-    const loginIcon = (Platform.OS === 'ios') ? "person-outline" : "person-sharp"
-    const passIcon = (Platform.OS === 'ios') ? "key-outline" : "key-sharp"
-    const eyeCovered = (Platform.OS === 'ios') ? "eye-off-outline" : "eye-off-sharp"
-    const eyeDiscovered = (Platform.OS === 'ios') ? "eye-outline" : "eye-sharp"
-    const passEyedIcon = (!passDiscover) ? eyeCovered : eyeDiscovered
+        const loginIcon = (Platform.OS === 'ios') ? "person-outline" : "person-sharp"
+        const passIcon = (Platform.OS === 'ios') ? "key-outline" : "key-sharp"
+        const eyeCovered = (Platform.OS === 'ios') ? "eye-off-outline" : "eye-off-sharp"
+        const eyeDiscovered = (Platform.OS === 'ios') ? "eye-outline" : "eye-sharp"
+        const passEyedIcon = (!passDiscover) ? eyeCovered : eyeDiscovered
 
     // Fonction de gestion de l'affichage du mot de passe en clair ou non
-    const SwitchEye = () => {
-        (passDiscover) ? setPassDiscover(false) : setPassDiscover(true)
-    }
+        const SwitchEye = () => {
+            (passDiscover) ? setPassDiscover(false) : setPassDiscover(true)
+        }
 
     // Fonction vérification champs vide email 
-    const verifyEmail = () => {
-        let result = (!email) ? "Veuillez rentrer votre adresse e-mail." : null
-        setErrorEmail(result)
-    }
+        const verifyEmail = () => {
+            let result = (!email) ? "Veuillez rentrer votre adresse e-mail." : null
+            setErrorEmail(result)
+        }
 
     // Fonction vérification champs vide password
-    const verifyPassword = () => {
-        let result = (!password) ? "Veuillez rentrer votre mot de passe." : null
-        setErrorPassword(result)
-    }
+        const verifyPassword = () => {
+            let result = (!password) ? "Veuillez rentrer votre mot de passe." : null
+            setErrorPassword(result)
+        }
 
     // Fonction submit
-    const testValidate = async () => {
-        let qsd = 'antoine@ewill.fr'
-        let aze = "antoine"
+        const testValidate = async () => {
 
-        // Envoi des données dans l'api
-        const token = await fetch("https://walter.dev.ewill.fr/api/login_check", {
-            method: 'POST',
-            body: JSON.stringify({
-                username: qsd,
-                password: aze
-            })
-        })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (result) {
-                (result.code == '401') ? setErrorForm('Identifiants invalides') : setErrorForm('')
-
-                if (result.token) {
-                    return result.token
-                }
-            });
-        
-        if(token){
-            const data = await fetch("https://walter.dev.ewill.fr/api/annonces/", {
-                    method: 'GET',
-                    headers: new Headers({
-                        'Authorization': `Bearer ${token}`,
-                    }),
+            // Envoi des données dans l'api
+            const token = await fetch("https://walter.dev.ewill.fr/api/login_check", {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: email,
+                    password: password
                 })
+            })
                 .then(function (response) {
-                    return response.json()
+                    return response.json();
                 })
                 .then(function (result) {
-                    setAnnounces(result)
-                    setIsSignedIn(true)
-                    navigation.navigate('BackOffice')
+                    (result.code == '401') ? setErrorForm('Identifiants invalides') : setErrorForm('')
+
+                    if (result.token) {
+                        
+                        setToken(result.token)
+                        return result.token
+                    }
                 });
+            
+            if(token){
+                const data = await fetch("https://walter.dev.ewill.fr/api/annonces/", {
+                        method: 'GET',
+                        headers: new Headers({
+                            'Authorization': `Bearer ${token}`,
+                        }),
+                    })
+                    .then(function (response) {
+                        return response.json()
+                    })
+                    .then(function (result) {
+                        // On ré ordonne les id de l'objet avant de le stocker
+                        result.sort((a, b) => (a.id > b.id) ? 1 : -1)
+                        setAnnounces(result)
+                        setIsSignedIn(true)
+                        navigation.navigate('BackOffice')
+                    });
+                }
             }
-        }
 
     return (
         <View style={styles.container}>
@@ -153,7 +156,7 @@ const Connexion = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#54BBE6',
+        backgroundColor: '#081826',
         width: '100%',
     },
     header: {

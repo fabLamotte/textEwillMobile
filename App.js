@@ -13,6 +13,7 @@ const App = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [announces, setAnnounces] = useState([])
+    const [token, setToken] = useState('')
     const Stack = createStackNavigator()
 
   return (
@@ -30,6 +31,7 @@ const App = () => {
                       setPassword={setPassword}
                       setAnnounces={setAnnounces} 
                       setIsSignedIn={setIsSignedIn}
+                      setToken={setToken}
                       />
                   ) 
                 }
@@ -39,6 +41,8 @@ const App = () => {
                 {(props) => (
                     <BackOffice {...props} 
                       announces={announces} 
+                      setAnnounces={setAnnounces}
+                      token={token}
                     />
                   ) 
                 }
