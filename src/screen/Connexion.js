@@ -141,6 +141,7 @@ const Connexion = (props) => {
                         {/* Boutton disabled si les deux champs ne sont pas remplis */}
                         <View style={styles.submitZone}>
                             <TouchableOpacity style={styles.submitButton} onPress={() => testValidate()}
+                                disabled={(!email && !password) ? true : false}
                                  >
                                 <Text style={styles.submitText}>Se connecter</Text>
                             </TouchableOpacity>
